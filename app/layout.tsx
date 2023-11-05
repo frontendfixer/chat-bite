@@ -17,7 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="text-foreground bg-background">
+    <html
+      lang="en"
+      className="bg-background text-foreground">
       <body className={signikaNegative.className}>
         <Providers>{children}</Providers>
       </body>
