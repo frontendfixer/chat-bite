@@ -37,7 +37,8 @@ export function SignInForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="my-5">
+      className="my-5"
+    >
       <Input
         label="Email"
         size="md"
@@ -58,7 +59,8 @@ export function SignInForm() {
           <button
             className="focus:outline-none"
             type="button"
-            onClick={toggleVisibility}>
+            onClick={toggleVisibility}
+          >
             {isVisible ? (
               <LuEye className="pointer-events-none text-primary-200" />
             ) : (
@@ -74,7 +76,9 @@ export function SignInForm() {
       <Button
         type="submit"
         radius="sm"
-        className="mt-5 w-full font-semibold">
+        color="secondary"
+        className="mt-5 w-full font-semibold"
+      >
         Log in
       </Button>
     </form>

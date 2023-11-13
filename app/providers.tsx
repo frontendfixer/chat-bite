@@ -8,7 +8,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <NextUIProvider>
       <NextThemesProvider
         attribute="class"
-        enableSystem>
+        enableSystem
+      >
         {children}
       </NextThemesProvider>
     </NextUIProvider>

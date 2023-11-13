@@ -14,7 +14,7 @@ export const SignUpFormSchema = z
     confirmPassword: z.string(),
   })
   .refine(data => data.confirmPassword === data.password, {
-    message: "Password does't match",
+    message: "Password doesn't match",
     path: ['confirmPassword'],
   });
 
@@ -44,7 +44,8 @@ export function SignUpForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="my-5">
+      className="my-5"
+    >
       <Input
         label="Email"
         size="md"
@@ -65,7 +66,8 @@ export function SignUpForm() {
           <button
             className="focus:outline-none"
             type="button"
-            onClick={toggleVisibility}>
+            onClick={toggleVisibility}
+          >
             {isVisible ? (
               <LuEye className="pointer-events-none text-primary-200" />
             ) : (
@@ -88,7 +90,8 @@ export function SignUpForm() {
           <button
             className="focus:outline-none"
             type="button"
-            onClick={toggleVisibility}>
+            onClick={toggleVisibility}
+          >
             {isVisible ? (
               <LuEye className="pointer-events-none text-primary-200" />
             ) : (
@@ -104,7 +107,8 @@ export function SignUpForm() {
       <Button
         type="submit"
         radius="sm"
-        className="mt-5 w-full font-semibold">
+        className="mt-5 w-full font-semibold"
+      >
         Submit
       </Button>
     </form>

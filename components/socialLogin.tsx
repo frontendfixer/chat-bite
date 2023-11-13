@@ -9,19 +9,22 @@ export const SocialLogin = () => {
       <Button
         fullWidth
         aria-label="facebook login"
-        className="bg-[#1877F2] text-base text-white">
+        className="bg-[#1877F2] text-base text-white"
+      >
         <BsFacebook />
       </Button>
       <Button
         fullWidth
         aria-label="google login"
-        className="bg-white text-base">
+        className="bg-white text-base"
+      >
         <BsGoogle />
       </Button>
       <Button
         fullWidth
         aria-label="github login"
-        className="bg-black text-base text-white">
+        className="bg-black text-base text-white"
+      >
         <BsGithub />
       </Button>
     </div>

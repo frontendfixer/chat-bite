@@ -20,7 +20,8 @@ export default function RootLayout({
     <html
       lang="en"
       className="bg-background text-foreground dark"
-      suppressHydrationWarning>
+      suppressHydrationWarning
+    >
       <body className={signikaNegative.className}>
         <Providers>{children}</Providers>
       </body>

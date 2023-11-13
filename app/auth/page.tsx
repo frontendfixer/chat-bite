@@ -20,14 +20,14 @@ const Auth = () => {
             Chat bite
           </h1>
         </div>
-        <AuthForm />
+        <SocialLogin />
         <div className="mx-auto">
           <div className="relative mt-8 border-t-2 border-primary-300">
             <p className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-background px-4">
               Or login with
             </p>
             <div className="mt-6">
-              <SocialLogin />
+              <AuthForm />
             </div>
           </div>
         </div>
