@@ -1,6 +1,8 @@
-import './globals.css';
+import '@/styles/globals.css';
+import '@/styles/ReactToastify.css';
 
 import type { Metadata } from 'next';
+import { ToastContainer } from 'react-toastify';
 
 import { signikaNegative } from '@/config/fonts';
 
@@ -23,6 +25,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={signikaNegative.className}>
+        <ToastContainer />
         <Providers>{children}</Providers>
       </body>
     </html>

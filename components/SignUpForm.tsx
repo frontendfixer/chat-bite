@@ -2,31 +2,35 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from '@nextui-org/react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { LuEye, LuEyeOff, LuMail } from 'react-icons/lu';
-import { z } from 'zod';
+import { toast } from 'react-toastify';
 
-export const SignUpFormSchema = z
-  .object({
-    email: z.string().email(),
-    password: z.string().min(8).trim(),
-    confirmPassword: z.string(),
-  })
-  .refine(data => data.confirmPassword === data.password, {
-    message: "Password doesn't match",
-    path: ['confirmPassword'],
-  });
+import { toastOptions } from '@/lib/ReactToastify';
+import { SignUpFormSchema, TSignUpForm } from '@/lib/schema';
 
-type TSignUpForm = z.infer<typeof SignUpFormSchema>;
+export type SignUpDataT = {
+  element: 'email' | 'password' | 'confirmPassword';
+  type: string;
+  data: { id: String; user: String; email: String };
+  message: string;
+  success: Boolean;
+};
 
 export function SignUpForm() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const {
     handleSubmit,
     register,
+    setError,
     formState: { errors },
   } = useForm<TSignUpForm>({
     defaultValues: {
@@ -37,8 +41,23 @@ export function SignUpForm() {
     resolver: zodResolver(SignUpFormSchema),
   });
 
-  const onSubmit = (data: TSignUpForm) => {
-    console.log(data);
+  const onSubmit = async (value: TSignUpForm) => {
+    setIsLoading(true);
+    const { data }: { data: SignUpDataT } = await axios.post(
+      'api/registration',
+      value,
+    );
+    setIsLoading(false);
+    if (!data.success) {
+      toast.error(data.message, toastOptions);
+      return setError(data?.element, {
+        type: data.type,
+        message: data.message,
+      });
+    }
+    toast.success(data.message, toastOptions);
+    console.log(data.data);
+    return router.push('/user/' + data.data.id);
   };
 
   return (
@@ -52,8 +71,9 @@ export function SignUpForm() {
         radius="sm"
         variant="bordered"
         color={errors?.email ? 'danger' : 'primary'}
+        isInvalid={errors?.email ? true : false}
         errorMessage={errors?.email?.message}
-        endContent={<LuMail className="text-primary-200" />}
+        endContent={<LuMail className="text-gray-500" />}
         {...register('email')}
       />
       <Input
@@ -62,20 +82,8 @@ export function SignUpForm() {
         radius="sm"
         variant="bordered"
         color={errors?.password ? 'danger' : 'primary'}
-        endContent={
-          <button
-            className="focus:outline-none"
-            type="button"
-            onClick={toggleVisibility}
-          >
-            {isVisible ? (
-              <LuEye className="pointer-events-none text-primary-200" />
-            ) : (
-              <LuEyeOff className="pointer-events-none text-primary-200" />
-            )}
-          </button>
-        }
-        type={isVisible ? 'text' : 'password'}
+        type="password"
+        isInvalid={errors?.password ? true : false}
         errorMessage={errors?.password?.message}
         className="mt-4"
         {...register('password')}
@@ -93,13 +101,14 @@ export function SignUpForm() {
             onClick={toggleVisibility}
           >
             {isVisible ? (
-              <LuEye className="pointer-events-none text-primary-200" />
+              <LuEye className="pointer-events-none text-gray-500" />
             ) : (
-              <LuEyeOff className="pointer-events-none text-primary-200" />
+              <LuEyeOff className="pointer-events-none text-gray-500" />
             )}
           </button>
         }
         type={isVisible ? 'text' : 'password'}
+        isInvalid={errors?.confirmPassword ? true : false}
         errorMessage={errors?.confirmPassword?.message}
         className="mt-4"
         {...register('confirmPassword')}
@@ -108,6 +117,7 @@ export function SignUpForm() {
         type="submit"
         radius="sm"
         className="mt-5 w-full font-semibold"
+        isLoading={isLoading}
       >
         Submit
       </Button>

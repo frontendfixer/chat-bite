@@ -9,7 +9,11 @@ const config: Config = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        outer: '0 0 20px 10px rgb(0 0 0 /0.3)',
+      },
+    },
     container: {
       center: true,
     },

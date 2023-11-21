@@ -2,13 +2,18 @@
 
 import { Button } from '@nextui-org/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { signOut } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 import { SignInForm } from './signInForm';
 import { SignUpForm } from './SignUpForm';
 
 export const AuthForm = () => {
-  const [isSignUp, setIsSignUp] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
+  const type = useSearchParams().get('type');
+  const [typeUrl, setTypeUrl] = useState(type ? type : 'signin');
 
   const variant = {
     initial: { opacity: 0, scale: 0.5, height: 0 },
@@ -16,10 +21,18 @@ export const AuthForm = () => {
     exit: { opacity: 0, scale: 0, height: 0 },
   };
 
+  const handelClick = () =>
+    typeUrl === 'signin' ? setTypeUrl('signup') : setTypeUrl('signin');
+
+  useEffect(() => {
+    const url = `${pathname}?type=${typeUrl}`;
+    router.push(url);
+  }, [pathname, router, typeUrl]);
+
   return (
     <>
       <AnimatePresence>
-        {isSignUp ? (
+        {typeUrl === 'signin' && (
           <motion.div
             layout
             key="signIn"
@@ -31,7 +44,8 @@ export const AuthForm = () => {
           >
             <SignInForm />
           </motion.div>
-        ) : (
+        )}
+        {typeUrl === 'signup' && (
           <motion.div
             layout
             key="signUp"
@@ -47,16 +61,25 @@ export const AuthForm = () => {
       </AnimatePresence>
       <div className="flex items-center justify-between gap-5">
         <p className="text-small">
-          {isSignUp ? "Don't have an account?" : 'Already have an account?'}
+          {typeUrl === 'signin'
+            ? "Don't have an account?"
+            : 'Already have an account?'}
         </p>
         <Button
-          onPress={() => setIsSignUp(!isSignUp)}
+          onPress={handelClick}
           variant="light"
-          color={isSignUp ? 'success' : 'danger'}
+          disableAnimation
+          color={typeUrl === 'signin' ? 'success' : 'danger'}
         >
-          {isSignUp ? 'Create an account' : 'Back to login'}
+          {typeUrl === 'signin' ? 'Create an account' : 'Back to login'}
         </Button>
       </div>
+      <Button
+        onPress={() => signOut()}
+        fullWidth
+      >
+        SignOut
+      </Button>
     </>
   );
 };

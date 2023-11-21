@@ -1,6 +1,7 @@
 'use client';
 
 import { NextUIProvider } from '@nextui-org/react';
+import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -10,7 +11,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         attribute="class"
         enableSystem
       >
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </NextThemesProvider>
     </NextUIProvider>
   );

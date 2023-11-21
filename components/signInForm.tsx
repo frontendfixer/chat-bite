@@ -2,25 +2,24 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from '@nextui-org/react';
+import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { LuEye, LuEyeOff, LuMail } from 'react-icons/lu';
-import { z } from 'zod';
+import { toast } from 'react-toastify';
 
-export const SignInFormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8).trim(),
-});
-
-type TSignInForm = z.infer<typeof SignInFormSchema>;
+import { toastOptions } from '@/lib/ReactToastify';
+import { SignInFormSchema, TSignInForm } from '@/lib/schema';
 
 export function SignInForm() {
+  const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const {
     handleSubmit,
     register,
+    setError,
     formState: { errors },
   } = useForm<TSignInForm>({
     defaultValues: {
@@ -30,8 +29,25 @@ export function SignInForm() {
     resolver: zodResolver(SignInFormSchema),
   });
 
-  const onSubmit = (data: TSignInForm) => {
-    console.log(data);
+  const onSubmit = async (data: TSignInForm) => {
+    setIsLoading(true);
+    return signIn('credentials', {
+      redirect: false,
+      ...data,
+    })
+      .then(cb => {
+        if (!cb?.ok || cb?.error) {
+          setError('password', {
+            message: 'Invalid Credential!',
+          });
+          setError('email', {
+            message: 'Invalid Credential!',
+          });
+          return toast.error('Invalid Credential!', toastOptions);
+        }
+        toast.success('Login Successful!', toastOptions);
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -45,8 +61,9 @@ export function SignInForm() {
         radius="sm"
         variant="bordered"
         color={errors?.email ? 'danger' : 'primary'}
+        isInvalid={errors?.email ? true : false}
         errorMessage={errors?.email?.message}
-        endContent={<LuMail className="text-primary-200" />}
+        endContent={<LuMail className="text-gray-600" />}
         {...register('email')}
       />
       <Input
@@ -62,13 +79,14 @@ export function SignInForm() {
             onClick={toggleVisibility}
           >
             {isVisible ? (
-              <LuEye className="pointer-events-none text-primary-200" />
+              <LuEye className="pointer-events-none text-gray-600" />
             ) : (
-              <LuEyeOff className="pointer-events-none text-primary-200" />
+              <LuEyeOff className="pointer-events-none text-gray-600" />
             )}
           </button>
         }
         type={isVisible ? 'text' : 'password'}
+        isInvalid={errors?.password ? true : false}
         errorMessage={errors?.password?.message}
         className="mt-4"
         {...register('password')}
@@ -76,7 +94,8 @@ export function SignInForm() {
       <Button
         type="submit"
         radius="sm"
-        color="secondary"
+        color={!isLoading ? 'primary' : 'secondary'}
+        isLoading={isLoading}
         className="mt-5 w-full font-semibold"
       >
         Log in
