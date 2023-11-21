@@ -24,7 +24,7 @@ export async function generateMetadata({
 const Auth = async () => {
   const session = await getServerSession(authOptions);
 
-  if (session.user) {
+  if (session?.user) {
     return redirect('/user/' + session.user.id);
   } else {
     return (
