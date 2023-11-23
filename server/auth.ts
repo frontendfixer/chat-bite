@@ -1,6 +1,10 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import * as argon2 from 'argon2';
-import { NextAuthOptions } from 'next-auth';
+import {
+  type DefaultSession,
+  getServerSession,
+  type NextAuthOptions,
+} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import FacebookProvider from 'next-auth/providers/facebook';
 import GitHubProvider from 'next-auth/providers/github';
@@ -8,6 +12,30 @@ import GoogleProvider from 'next-auth/providers/google';
 
 import prisma from '@/server/db';
 
+/**
+ * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
+ * object and keep type safety.
+ *
+ * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
+ */
+declare module 'next-auth' {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+    } & DefaultSession['user'];
+  }
+
+  // interface User {
+  //   id: string,
+  //   role: UserRole;
+  // }
+}
+
+/**
+ * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
+ *
+ * @see https://next-auth.js.org/configuration/options
+ */
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -49,7 +77,7 @@ export const authOptions: NextAuthOptions = {
           user.hashedPassword,
           credentials.password,
           {
-            secret: Buffer.from(process.env.ARGON2_SECRET as String),
+            secret: Buffer.from(process.env.ARGON2_SECRET as string),
           },
         );
         if (!isCorrectPassword) {
@@ -65,16 +93,28 @@ export const authOptions: NextAuthOptions = {
     signOut: process.env.BASE_URL + '/auth?type=signup',
   },
   callbacks: {
-    async signIn({ account, profile }) {
-      if (account.provider === 'google') {
-        return profile.email_verified && profile.email.endsWith('@gmail.com');
+    async signIn({ user }) {
+      const isAllowedToSignIn = true;
+      if (isAllowedToSignIn) {
+        return process.env.BASE_URL + '/user/' + user.id;
+      } else {
+        return process.env.BASE_URL + '/auth?type=signin';
       }
-      return true;
     },
     async redirect({ url, baseUrl }) {
       if (url.startsWith('/')) return `${baseUrl}${url}`;
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl + '/auth';
+    },
+    async jwt({ token, user }) {
+      console.log('fire JWT Callback');
+      if (user) {
+        return {
+          ...token,
+          id: user.id,
+        };
+      }
+      return token;
     },
     async session({ session, token }) {
       console.log('fire SESSION Callback');
@@ -86,17 +126,6 @@ export const authOptions: NextAuthOptions = {
         },
       };
     },
-    async jwt({ token, user }) {
-      console.log('fire JWT Callback');
-      if (user) {
-        const u = user as unknown as any;
-        return {
-          ...token,
-          id: u.id,
-        };
-      }
-      return token;
-    },
   },
   session: {
     strategy: 'jwt',
@@ -105,3 +134,10 @@ export const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET as string,
 };
+
+/**
+ * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
+ *
+ * @see https://next-auth.js.org/configuration/nextjs
+ */
+export const getServerAuthSession = () => getServerSession(authOptions);
