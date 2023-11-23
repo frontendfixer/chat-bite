@@ -2,7 +2,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as argon2 from 'argon2';
 import { NextResponse } from 'next/server';
 import {
-  Config,
+  type Config,
   NumberDictionary,
   starWars,
   uniqueNamesGenerator,
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
   try {
     const hashedPassword = await argon2.hash(password, {
-      secret: Buffer.from(process.env.ARGON2_SECRET as String),
+      secret: Buffer.from(process.env.ARGON2_SECRET!),
     });
 
     const numberDictionary = NumberDictionary.generate({ length: 3 });
@@ -52,7 +52,6 @@ export async function POST(req: Request) {
       success: true,
     });
   } catch (error) {
-    console.log(error);
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         return NextResponse.json({

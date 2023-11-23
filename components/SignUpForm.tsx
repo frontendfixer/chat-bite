@@ -3,29 +3,26 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from '@nextui-org/react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { LuEye, LuEyeOff, LuMail } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 
 import { toastOptions } from '@/lib/ReactToastify';
-import { SignUpFormSchema, TSignUpForm } from '@/lib/schema';
+import { SignUpFormSchema, type TSignUpForm } from '@/lib/schema';
 
 export type SignUpDataT = {
   element: 'email' | 'password' | 'confirmPassword';
   type: string;
-  data: { id: String; user: String; email: String };
+  data: { id: string; user: string; email: string };
   message: string;
-  success: Boolean;
+  success: boolean;
 };
 
 export function SignUpForm() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
-
-  const router = useRouter();
 
   const {
     handleSubmit,
@@ -55,9 +52,7 @@ export function SignUpForm() {
         message: data.message,
       });
     }
-    toast.success(data.message, toastOptions);
-    console.log(data.data);
-    return router.push('/user/' + data.data.id);
+    return toast.success(data.message, toastOptions);
   };
 
   return (

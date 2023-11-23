@@ -1,4 +1,4 @@
-import { ToastOptions } from 'react-toastify';
+import { type ToastOptions } from 'react-toastify';
 
 export const toastOptions: ToastOptions = {
   position: 'top-right',

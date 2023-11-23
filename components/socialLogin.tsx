@@ -12,7 +12,7 @@ export const SocialLogin = () => {
   const [loading, setLoading] = useState(false);
   const [btnId, setBtnId] = useState('');
 
-  const submitHandler = (
+  const submitHandler = async (
     event: {
       target: {
         id: string;
@@ -22,9 +22,12 @@ export const SocialLogin = () => {
   ) => {
     setLoading(true);
     setBtnId(event.target.id);
-    signIn(action)
-      .then(() => toast.info('Redirecting to Social Login...', toastOptions))
-      .finally(() => setLoading(false));
+    const response = await signIn(action);
+    if (!response?.ok) {
+      toast.error('Unable to login!', toastOptions);
+    }
+    setLoading(false);
+    return toast.success('Login successful!', toastOptions);
   };
 
   return (

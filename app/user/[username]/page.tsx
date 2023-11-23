@@ -4,7 +4,7 @@ import { Button } from '@nextui-org/react';
 import { redirect } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 
-const UserPage = ({ params }: { params: { username: String } }) => {
+const UserPage = ({ params }: { params: { username: string } }) => {
   const { status } = useSession();
   if (status === 'unauthenticated') {
     return redirect('/auth');

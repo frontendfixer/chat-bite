@@ -9,7 +9,7 @@ import { LuEye, LuEyeOff, LuMail } from 'react-icons/lu';
 import { toast } from 'react-toastify';
 
 import { toastOptions } from '@/lib/ReactToastify';
-import { SignInFormSchema, TSignInForm } from '@/lib/schema';
+import { SignInFormSchema, type TSignInForm } from '@/lib/schema';
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);

@@ -1,28 +1,27 @@
 import { Image } from '@nextui-org/react';
-import { Metadata } from 'next';
+import { type Metadata } from 'next';
 import NextImage from 'next/image';
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
 
 import { AuthForm, SocialLogin } from '@/components';
-import { authOptions } from '@/server/auth';
+import { titleCase } from '@/lib/helper';
+import { getServerAuthSession } from '@/server/auth';
 
 type Props = {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Record<string, string | string[] | undefined>;
 };
 
 export async function generateMetadata({
   searchParams,
 }: Props): Promise<Metadata> {
-  let type = searchParams.type;
-  type = (type?.at(0)?.toUpperCase() as string) + type?.slice(1);
+  const type = searchParams.type as string;
   return {
-    title: `${type} - Chat Bite`,
+    title: `${titleCase(type)} - Chat Bite`,
   };
 }
 
 const Auth = async () => {
-  const session = await getServerSession(authOptions);
+  const session = await getServerAuthSession();
 
   if (session?.user) {
     return redirect('/user/' + session.user.id);

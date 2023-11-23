@@ -3,7 +3,6 @@
 import { Button } from '@nextui-org/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 import { SignInForm } from './signInForm';
@@ -74,12 +73,6 @@ export const AuthForm = () => {
           {typeUrl === 'signin' ? 'Create an account' : 'Back to login'}
         </Button>
       </div>
-      <Button
-        onPress={() => signOut()}
-        fullWidth
-      >
-        SignOut
-      </Button>
     </>
   );
 };
