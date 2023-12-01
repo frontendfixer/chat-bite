@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import '@/styles/ReactToastify.css';
 
+import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import { type Session } from 'next-auth';
 import { ToastContainer } from 'react-toastify';
@@ -31,6 +32,7 @@ export default async function RootLayout({
       <body className={signikaNegative.className}>
         <ToastContainer />
         <Providers session={session}>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
