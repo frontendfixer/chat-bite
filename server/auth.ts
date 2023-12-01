@@ -1,35 +1,12 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import * as argon2 from 'argon2';
-import {
-  type DefaultSession,
-  getServerSession,
-  type NextAuthOptions,
-} from 'next-auth';
+import { getServerSession, type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import FacebookProvider from 'next-auth/providers/facebook';
 import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 
 import prisma from '@/server/db';
-
-/**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
- */
-declare module 'next-auth' {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-    } & DefaultSession['user'];
-  }
-
-  // interface User {
-  //   id: string,
-  //   role: UserRole;
-  // }
-}
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -93,25 +70,13 @@ export const authOptions: NextAuthOptions = {
     signOut: process.env.BASE_URL + '/auth?type=signup',
   },
   callbacks: {
-    async signIn({ user }) {
-      const isAllowedToSignIn = true;
-      if (isAllowedToSignIn) {
-        return process.env.BASE_URL + '/user/' + user.id;
-      } else {
-        return process.env.BASE_URL + '/auth?type=signin';
-      }
-    },
-    async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl + '/auth';
-    },
     async jwt({ token, user }) {
       console.log('fire JWT Callback');
       if (user) {
         return {
           ...token,
           id: user.id,
+          role: user.role,
         };
       }
       return token;
@@ -123,6 +88,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.id,
+          role: token.role,
         },
       };
     },
