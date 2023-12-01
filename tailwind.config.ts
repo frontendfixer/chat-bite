@@ -1,7 +1,7 @@
 import { nextui } from '@nextui-org/react';
-import type { Config } from 'tailwindcss';
+import { type Config } from "tailwindcss";
 
-const config: Config = {
+const config = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,7 +9,14 @@ const config: Config = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        outer: '0 0 20px 10px rgb(0 0 0 /0.3)',
+      },
+    },
+    container: {
+      center: true,
+    },
   },
   darkMode: 'class',
   plugins: [
@@ -148,5 +155,5 @@ const config: Config = {
       },
     }),
   ],
-};
+}satisfies Config;;
 export default config;

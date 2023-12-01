@@ -1,9 +1,8 @@
-/** @type {import("prettier").Config} */
+/** @type {import("prettier").Config & import('prettier-plugin-tailwindcss').options} */
 const config = {
   tabWidth: 2,
   semi: true,
   singleQuote: true,
-  bracketSameLine: true,
   arrowParens: 'avoid',
   singleAttributePerLine: true,
   tailwindFunctions: ['cn'],
