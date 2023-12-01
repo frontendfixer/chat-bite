@@ -4,9 +4,6 @@ import { Button } from '@nextui-org/react';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { BsFacebook, BsGithub, BsGoogle } from 'react-icons/bs';
-import { toast } from 'react-toastify';
-
-import { toastOptions } from '@/lib/ReactToastify';
 
 export const SocialLogin = () => {
   const [loading, setLoading] = useState(false);
@@ -22,12 +19,9 @@ export const SocialLogin = () => {
   ) => {
     setLoading(true);
     setBtnId(event.target.id);
-    const response = await signIn(action);
-    if (!response?.ok) {
-      toast.error('Unable to login!', toastOptions);
-    }
-    setLoading(false);
-    return toast.success('Login successful!', toastOptions);
+    return signIn(action, {
+      callbackUrl: '/user',
+    });
   };
 
   return (

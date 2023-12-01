@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from '@nextui-org/react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { LuEye, LuEyeOff, LuMail } from 'react-icons/lu';
@@ -20,6 +21,7 @@ export type SignUpDataT = {
 };
 
 export function SignUpForm() {
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +54,9 @@ export function SignUpForm() {
         message: data.message,
       });
     }
-    return toast.success(data.message, toastOptions);
+
+    toast.success(data.message, toastOptions);
+    return router.push('/user');
   };
 
   return (

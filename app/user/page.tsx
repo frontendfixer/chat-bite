@@ -1,12 +1,11 @@
-'use client';
-
-import { Button, CardFooter, Image } from '@nextui-org/react';
+import { Button, CardFooter, Image, Link } from '@nextui-org/react';
 import { Card, CardBody } from '@nextui-org/react';
 import NextImage from 'next/image';
-import { signOut, useSession } from 'next-auth/react';
 
-const UserPage = () => {
-  const { data: session } = useSession();
+import { getServerAuthSession } from '@/server/auth';
+
+export default async function User() {
+  const session = await getServerAuthSession()!;
   return (
     <div className="container grid h-[100svh] place-content-center px-3">
       <Card isBlurred>
@@ -36,16 +35,16 @@ const UserPage = () => {
           end-to-end encryption.
         </p>
         <Button
-          color="danger"
+          href={'/user/' + session?.user.id}
+          as={Link}
+          color="primary"
+          showAnchorIcon
           variant="solid"
           className="mx-auto mt-4 w-1/2"
-          onPress={() => signOut()}
         >
-          Sign out
+          Open Chat
         </Button>
       </div>
     </div>
   );
-};
-
-export default UserPage;
+}

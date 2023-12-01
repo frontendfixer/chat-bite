@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +13,7 @@ import { toastOptions } from '@/lib/ReactToastify';
 import { SignInFormSchema, type TSignInForm } from '@/lib/schema';
 
 export function SignInForm() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -31,23 +33,23 @@ export function SignInForm() {
 
   const onSubmit = async (data: TSignInForm) => {
     setIsLoading(true);
-    return signIn('credentials', {
+    const cb = await signIn('credentials', {
       redirect: false,
       ...data,
-    })
-      .then(cb => {
-        if (!cb?.ok || cb?.error) {
-          setError('password', {
-            message: 'Invalid Credential!',
-          });
-          setError('email', {
-            message: 'Invalid Credential!',
-          });
-          return toast.error('Invalid Credential!', toastOptions);
-        }
-        toast.success('Login Successful!', toastOptions);
-      })
-      .finally(() => setIsLoading(false));
+    });
+    setIsLoading(false);
+
+    if (!cb?.ok || cb?.error) {
+      setError('password', {
+        message: 'Invalid Credential!',
+      });
+      setError('email', {
+        message: 'Invalid Credential!',
+      });
+      return toast.error('Invalid Credential!', toastOptions);
+    }
+    toast.success('Login Successful!', toastOptions);
+    return router.push('/user');
   };
 
   return (
