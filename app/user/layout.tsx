@@ -5,8 +5,11 @@ import { getServerAuthSession } from '@/server/auth';
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await getServerAuthSession()!;
+  const userName = session?.user.name
+    ? titleCase(session?.user.name as string)
+    : 'Master Yoda';
   return {
-    title: titleCase(session?.user.name as string) + ' - Welcome ChatBite User',
+    title: userName + ' - Welcome ChatBite User',
   };
 }
 

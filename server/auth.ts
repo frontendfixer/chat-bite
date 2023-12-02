@@ -1,4 +1,4 @@
-import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import * as argon2 from 'argon2';
 import { getServerSession, type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -6,7 +6,7 @@ import FacebookProvider from 'next-auth/providers/facebook';
 import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 
-import prisma from '@/server/db';
+import { db } from '@/server/db';
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -14,7 +14,8 @@ import prisma from '@/server/db';
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  //@ts-expect-error
+  adapter: PrismaAdapter(db),
   providers: [
     FacebookProvider({
       name: 'facebook',
@@ -41,7 +42,7 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Invalid Credentials!');
         }
-        const user = await prisma.user.findUnique({
+        const user = await db.user.findUnique({
           where: {
             email: credentials.email,
           },
