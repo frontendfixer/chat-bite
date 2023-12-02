@@ -9,7 +9,7 @@ import {
 } from 'unique-names-generator';
 
 import { SignUpFormSchema } from '@/lib/schema/signUpSchema';
-import prisma from '@/server/db';
+import { db } from '@/server/db';
 
 export async function POST(req: Request) {
   const data: unknown = await req.json();
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
     const name: string = uniqueNamesGenerator(nameConfig);
 
-    const user = await prisma.user.create({
+    const user = await db.user.create({
       data: {
         name,
         email,
@@ -61,6 +61,13 @@ export async function POST(req: Request) {
           success: false,
         });
       }
+    } else {
+      return NextResponse.json({
+        element: 'email',
+        type: 'authentication',
+        message: 'Server Error!',
+        success: false,
+      });
     }
   }
 }

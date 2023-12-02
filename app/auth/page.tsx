@@ -13,7 +13,6 @@ type Props = {
 export async function generateMetadata({
   searchParams,
 }: Props): Promise<Metadata> {
-  console.log(searchParams);
   const type = searchParams?.type;
   return {
     title: `${type ? titleCase(type) : 'Authentication'} - Chat Bite`,
